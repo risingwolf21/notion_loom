@@ -19,12 +19,11 @@ export function AddTaskRow({ onAdd, hasDateProp }: Props) {
     onAdd(title.trim(), dueDate || undefined)
     setTitle('')
     setDueDate('')
-    // Keep open for rapid entry
     inputRef.current?.focus()
   }
 
   function handleKey(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') submit()
+    if (e.key === 'Enter')  submit()
     if (e.key === 'Escape') { setOpen(false); setTitle(''); setDueDate('') }
   }
 
@@ -38,10 +37,10 @@ export function AddTaskRow({ onAdd, hasDateProp }: Props) {
     return (
       <button
         onClick={() => { setOpen(true); setTimeout(() => inputRef.current?.focus(), 50) }}
-        className="flex items-center gap-3 w-full px-4 py-3.5 text-[var(--primary)] text-sm font-medium hover:bg-[var(--surface2)] active:bg-[var(--surface2)] transition-colors"
+        className="flex items-center gap-3 w-full px-4 py-3 text-primary text-sm font-medium hover:bg-accent transition-colors"
       >
-        <div className="w-6 h-6 rounded-full bg-[var(--primary)] flex items-center justify-center shrink-0">
-          <Plus size={14} className="text-white" />
+        <div className="size-6 rounded-full bg-primary flex items-center justify-center shrink-0">
+          <Plus size={14} className="text-primary-foreground" />
         </div>
         New task
       </button>
@@ -49,7 +48,7 @@ export function AddTaskRow({ onAdd, hasDateProp }: Props) {
   }
 
   return (
-    <div className="px-4 py-3 space-y-2 bg-[var(--card)] border-t border-[var(--border)]">
+    <div className="px-4 py-3 space-y-2 bg-card border-t border-border">
       <Input
         ref={inputRef}
         value={title}
