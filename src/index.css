@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #F2F2F7;
+  --card: #FFFFFF;
+  --fg: #1C1C1E;
+  --fg2: rgba(60, 60, 67, 0.8);
+  --fg3: rgba(60, 60, 67, 0.6);
+  --border: rgba(60, 60, 67, 0.12);
+  --separator: rgba(60, 60, 67, 0.36);
+  --primary: #007AFF;
+  --primary-light: rgba(0, 122, 255, 0.1);
+  --destructive: #FF3B30;
+  --success: #34C759;
+  --warning: #FF9500;
+  --surface2: rgba(118, 118, 128, 0.12);
+  --radius: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1C1C1E;
+    --fg: #FFFFFF;
+    --fg2: rgba(235, 235, 245, 0.6);
+    --fg3: rgba(235, 235, 245, 0.3);
+    --border: rgba(84, 84, 88, 0.36);
+    --separator: rgba(84, 84, 88, 0.65);
+    --primary: #0A84FF;
+    --primary-light: rgba(10, 132, 255, 0.12);
+    --destructive: #FF453A;
+    --success: #32D74B;
+    --surface2: rgba(118, 118, 128, 0.24);
+  }
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+}
+
+body {
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--separator); border-radius: 2px; }
+
+/* Animations */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes check-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes sheet-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.task-enter { animation: slide-in 0.18s ease forwards; }
+.fade-in    { animation: fade-in  0.15s ease forwards; }
