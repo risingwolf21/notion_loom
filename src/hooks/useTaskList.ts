@@ -6,8 +6,10 @@ import { detectDatabaseMeta, pageToTask } from '@/lib/notionProps'
 import type { NotionDatabase, Task, DatabaseMeta } from '@/types/notion'
 import type { Settings } from './useSettings'
 
-const orderKey   = (id: string) => `notion_loom_order_${id}`
-const showDoneKey = (id: string) => `notion_loom_done_${id}`
+export type TaskFilter = 'active' | 'all' | 'done'
+
+const orderKey  = (id: string) => `notion_loom_order_${id}`
+const filterKey = (id: string) => `notion_loom_filter_${id}`
 
 function loadOrder(id: string): string[] {
   try { return JSON.parse(localStorage.getItem(orderKey(id)) ?? '[]') as string[] }
@@ -30,14 +32,19 @@ function applyOrder(tasks: Task[], order: string[]): Task[] {
 }
 
 export function useTaskList(database: NotionDatabase, settings: Settings) {
-  const [tasks, setTasks]         = useState<Task[]>([])
-  const [meta, setMeta]           = useState<DatabaseMeta | null>(null)
-  const [loading, setLoading]     = useState(true)
-  const [error, setError]         = useState<string | null>(null)
-  const [showDone, setShowDone]   = useState(
-    () => localStorage.getItem(showDoneKey(database.id)) !== 'false',
+  const [tasks, setTasks]     = useState<Task[]>([])
+  const [meta, setMeta]       = useState<DatabaseMeta | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState<string | null>(null)
+  const [filter, setFilterState] = useState<TaskFilter>(
+    () => (localStorage.getItem(filterKey(database.id)) as TaskFilter | null) ?? 'active',
   )
   const metaRef = useRef<DatabaseMeta | null>(null)
+
+  const setFilter = useCallback((f: TaskFilter) => {
+    localStorage.setItem(filterKey(database.id), f)
+    setFilterState(f)
+  }, [database.id])
 
   const reload = useCallback(async () => {
     setLoading(true)
@@ -46,8 +53,8 @@ export function useTaskList(database: NotionDatabase, settings: Settings) {
       const m = detectDatabaseMeta(database)
       setMeta(m)
       metaRef.current = m
-      const pages    = await queryDatabase(settings.workerUrl, settings.token, database.id)
-      const raw      = pages.filter((p) => !p.archived).map((p) => pageToTask(p, m))
+      const pages = await queryDatabase(settings.workerUrl, settings.token, database.id)
+      const raw   = pages.filter((p) => !p.archived).map((p) => pageToTask(p, m))
       setTasks(applyOrder(raw, loadOrder(database.id)))
     } catch (err) {
       setError(
@@ -122,19 +129,15 @@ export function useTaskList(database: NotionDatabase, settings: Settings) {
     saveOrder(database.id, next.map((t) => t.id))
   }, [database.id])
 
-  const toggleShowDone = useCallback(() => {
-    setShowDone((prev) => {
-      localStorage.setItem(showDoneKey(database.id), String(!prev))
-      return !prev
-    })
-  }, [database.id])
-
-  const visibleTasks = showDone ? tasks : tasks.filter((t) => !t.done)
+  const visibleTasks =
+    filter === 'active' ? tasks.filter((t) => !t.done) :
+    filter === 'done'   ? tasks.filter((t) => t.done) :
+    tasks
 
   return {
     tasks, visibleTasks, meta,
     loading, error,
-    showDone, toggleShowDone,
+    filter, setFilter,
     toggleTask, addTask, deleteTask, reorderTasks,
     refresh: reload,
   }

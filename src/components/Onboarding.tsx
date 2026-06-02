@@ -1,8 +1,11 @@
 import { useState } from 'react'
-import { Eye, EyeOff, CheckCircle2, AlertCircle, Copy, Check, ChevronRight, Zap } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, Copy, Check, ChevronRight, Zap, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
+import { Alert } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { validateConnection } from '@/lib/notion'
 import { FIXED_WORKER_URL } from '@/lib/config'
 import type { Settings } from '@/hooks/useSettings'
@@ -37,7 +40,6 @@ interface Props {
   onComplete: (settings: Settings) => void
 }
 
-// ── Simple flow when worker URL is baked in ─────────────────────────────────────────────
 function SimpleOnboarding({ onComplete }: Props) {
   const [token, setToken]         = useState('')
   const [showToken, setShowToken] = useState(false)
@@ -59,31 +61,34 @@ function SimpleOnboarding({ onComplete }: Props) {
   }
 
   return (
-    <div className="flex-1 flex flex-col justify-center overflow-y-auto bg-[var(--bg)] px-5 py-10">
+    <div className="flex-1 flex flex-col justify-center overflow-y-auto bg-background px-5 py-10">
       <div className="max-w-sm mx-auto w-full space-y-6">
         <div className="flex flex-col items-center gap-3 pb-2">
-          <div className="w-16 h-16 rounded-2xl bg-[var(--primary)] flex items-center justify-center shadow-lg">
-            <CheckCircle2 size={30} className="text-white" />
+          <div className="size-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
+            <CheckCircle2 size={30} className="text-primary-foreground" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-[var(--fg)]">Notion Loom</h1>
-            <p className="text-sm text-[var(--fg3)] mt-0.5">iOS Reminders, powered by Notion</p>
+            <h1 className="text-2xl font-bold text-foreground">Notion Loom</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">iOS Reminders, powered by Notion</p>
           </div>
         </div>
 
         <Card>
           <CardContent className="pt-6 space-y-5">
-            <div className="flex items-center gap-2 text-xs font-medium text-[var(--success)] bg-[rgba(52,199,89,0.1)] rounded-xl px-3 py-2">
-              <Zap size={13} />
-              Proxy already configured
+            <div className="flex items-center gap-2">
+              <Badge variant="success" className="gap-1.5 py-1 px-2.5">
+                <Zap size={11} />
+                Proxy pre-configured
+              </Badge>
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-[var(--fg)]">
+              <Label className="flex items-center gap-1.5">
+                <Shield size={13} className="text-muted-foreground" />
                 Notion Integration Token
-              </label>
-              <p className="text-xs text-[var(--fg3)] leading-relaxed">
-                Go to <strong className="text-[var(--fg2)]">notion.so/my-integrations</strong>, create
+              </Label>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Go to <strong className="text-foreground">notion.so/my-integrations</strong>, create
                 an integration, give it access to your databases, and paste the token here.
                 It's stored only on this device.
               </p>
@@ -101,7 +106,7 @@ function SimpleOnboarding({ onComplete }: Props) {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--fg3)] hover:text-[var(--fg)] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setShowToken(v => !v)}
                   aria-label={showToken ? 'Hide token' : 'Show token'}
                 >
@@ -110,12 +115,7 @@ function SimpleOnboarding({ onComplete }: Props) {
               </div>
             </div>
 
-            {error && (
-              <div className="flex items-start gap-2 text-sm text-[var(--destructive)] bg-[rgba(255,59,48,0.08)] rounded-xl px-3 py-2.5">
-                <AlertCircle size={15} className="mt-0.5 shrink-0" />
-                <span className="leading-snug">{error}</span>
-              </div>
-            )}
+            {error && <Alert variant="destructive">{error}</Alert>}
 
             <Button
               className="w-full"
@@ -131,7 +131,6 @@ function SimpleOnboarding({ onComplete }: Props) {
   )
 }
 
-// ── Full flow (user provides worker URL) ─────────────────────────────────────
 function FullOnboarding({ onComplete }: Props) {
   const [step, setStep]           = useState<1 | 2 | 3>(1)
   const [workerUrl, setWorkerUrl] = useState('')
@@ -165,28 +164,29 @@ function FullOnboarding({ onComplete }: Props) {
   const stepTitles = ['Deploy proxy', 'Worker URL', 'Notion token']
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto bg-[var(--bg)]">
+    <div className="flex-1 flex flex-col overflow-y-auto bg-background">
       <div className="max-w-lg mx-auto w-full px-5 py-8 space-y-6">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-[var(--primary)] flex items-center justify-center shadow-lg">
-            <CheckCircle2 size={30} className="text-white" />
+          <div className="size-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
+            <CheckCircle2 size={30} className="text-primary-foreground" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-[var(--fg)]">Notion Loom</h1>
-            <p className="text-sm text-[var(--fg3)] mt-0.5">iOS Reminders, powered by Notion</p>
+            <h1 className="text-2xl font-bold text-foreground">Notion Loom</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">iOS Reminders, powered by Notion</p>
           </div>
         </div>
 
+        {/* Step indicator */}
         <div className="flex items-center justify-center gap-2">
           {([1, 2, 3] as const).map((s) => (
             <div
               key={s}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 s === step
-                  ? 'w-8 bg-[var(--primary)]'
+                  ? 'w-8 bg-primary'
                   : s < step
-                    ? 'w-4 bg-[var(--primary)] opacity-40'
-                    : 'w-4 bg-[var(--separator)]'
+                    ? 'w-4 bg-primary opacity-40'
+                    : 'w-4 bg-border'
               }`}
             />
           ))}
@@ -195,42 +195,42 @@ function FullOnboarding({ onComplete }: Props) {
         <Card>
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-full bg-[var(--primary)] text-white text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="size-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0">
                 {step}
               </span>
-              <h2 className="text-base font-semibold text-[var(--fg)]">{stepTitles[step - 1]}</h2>
+              <h2 className="text-base font-semibold text-foreground">{stepTitles[step - 1]}</h2>
             </div>
 
             {step === 1 && (
               <div className="space-y-4">
-                <p className="text-sm text-[var(--fg2)] leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Notion's API blocks browser requests. Deploy a free Cloudflare Worker as a proxy — it takes about 3 minutes.
                 </p>
-                <ol className="space-y-2.5 text-sm text-[var(--fg2)]">
+                <ol className="space-y-2.5 text-sm text-muted-foreground">
                   {[
-                    <>Go to <strong className="text-[var(--fg)]">workers.cloudflare.com</strong> and sign in (free account).</>,
-                    <>Click <strong className="text-[var(--fg)]">Create Worker</strong> → <strong className="text-[var(--fg)]">Deploy</strong>.</>,
-                    <>Click <strong className="text-[var(--fg)]">Edit code</strong>, replace everything with the code below, then <strong className="text-[var(--fg)]">Save &amp; Deploy</strong>.</>,
+                    <>Go to <strong className="text-foreground">workers.cloudflare.com</strong> and sign in (free account).</>,
+                    <>Click <strong className="text-foreground">Create Worker</strong> → <strong className="text-foreground">Deploy</strong>.</>,
+                    <>Click <strong className="text-foreground">Edit code</strong>, replace everything with the code below, then <strong className="text-foreground">Save &amp; Deploy</strong>.</>,
                     <>Copy the Worker URL shown on the dashboard.</>,
                   ].map((item, i) => (
                     <li key={i} className="flex gap-2.5 items-start">
-                      <span className="w-5 h-5 rounded-full bg-[var(--primary-light)] text-[var(--primary)] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="size-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                         {i + 1}
                       </span>
                       <span className="flex-1 leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ol>
-                <div className="relative rounded-xl overflow-hidden border border-[var(--border)]">
-                  <pre className="text-[11px] bg-[var(--surface2)] p-4 overflow-x-auto text-[var(--fg2)] leading-relaxed whitespace-pre font-mono">
+                <div className="relative rounded-xl overflow-hidden border border-border">
+                  <pre className="text-[11px] bg-muted p-4 overflow-x-auto text-muted-foreground leading-relaxed whitespace-pre font-mono">
                     {WORKER_CODE}
                   </pre>
                   <button
                     onClick={copyCode}
-                    className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-[var(--card)] shadow-sm text-[var(--fg3)] hover:text-[var(--fg)] transition-colors border border-[var(--border)]"
+                    className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-card shadow-sm text-muted-foreground hover:text-foreground transition-colors border border-border"
                     aria-label="Copy code"
                   >
-                    {copied ? <Check size={13} className="text-[var(--success)]" /> : <Copy size={13} />}
+                    {copied ? <Check size={13} className="text-success" /> : <Copy size={13} />}
                   </button>
                 </div>
                 <Button className="w-full" onClick={() => setStep(2)}>
@@ -241,9 +241,9 @@ function FullOnboarding({ onComplete }: Props) {
 
             {step === 2 && (
               <div className="space-y-4">
-                <p className="text-sm text-[var(--fg2)] leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Paste the URL Cloudflare gave your Worker (e.g.{' '}
-                  <code className="text-xs bg-[var(--surface2)] px-1.5 py-0.5 rounded font-mono">my-worker.workers.dev</code>).
+                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-foreground">my-worker.workers.dev</code>).
                 </p>
                 <Input
                   value={workerUrl}
@@ -266,8 +266,8 @@ function FullOnboarding({ onComplete }: Props) {
 
             {step === 3 && (
               <div className="space-y-4">
-                <p className="text-sm text-[var(--fg2)] leading-relaxed">
-                  Go to <strong className="text-[var(--fg)]">notion.so/my-integrations</strong>, create
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Go to <strong className="text-foreground">notion.so/my-integrations</strong>, create
                   an integration, give it access to your databases, and paste the token below.
                   It's stored only on this device.
                 </p>
@@ -285,22 +285,18 @@ function FullOnboarding({ onComplete }: Props) {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--fg3)] hover:text-[var(--fg)] transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     onClick={() => setShowToken(v => !v)}
+                    aria-label={showToken ? 'Hide token' : 'Show token'}
                   >
                     {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
-                {error && (
-                  <div className="flex items-start gap-2 text-sm text-[var(--destructive)] bg-[rgba(255,59,48,0.08)] rounded-xl px-3 py-2.5">
-                    <AlertCircle size={15} className="mt-0.5 shrink-0" />
-                    <span className="leading-snug">{error}</span>
-                  </div>
-                )}
+                {error && <Alert variant="destructive">{error}</Alert>}
                 <div className="flex gap-2 pt-1">
                   <Button variant="ghost" onClick={() => setStep(2)} className="flex-1">Back</Button>
                   <Button
-                    onClick={() => { void handleConnect() }}
+                    onClick={() => void handleConnect()}
                     disabled={!token.trim() || testing}
                     className="flex-1"
                   >
@@ -312,7 +308,7 @@ function FullOnboarding({ onComplete }: Props) {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-[var(--fg3)] px-4 pb-4">
+        <p className="text-center text-xs text-muted-foreground px-4 pb-4">
           Your token is stored only on this device and sent exclusively to your own Worker.
         </p>
       </div>

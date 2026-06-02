@@ -49,8 +49,9 @@ function TasksView({
   onSettings: () => void
 }) {
   const {
-    tasks, visibleTasks, meta, loading, error, showDone,
-    toggleShowDone, toggleTask, addTask, deleteTask, reorderTasks, refresh,
+    tasks, visibleTasks, meta, loading, error,
+    filter, setFilter,
+    toggleTask, addTask, deleteTask, reorderTasks, refresh,
   } = useTaskList(database, settings)
 
   return (
@@ -61,14 +62,14 @@ function TasksView({
       meta={meta}
       loading={loading}
       error={error}
-      showDone={showDone}
+      filter={filter}
       onBack={onBack}
       onSettings={onSettings}
       onToggleTask={toggleTask}
       onDeleteTask={deleteTask}
       onAddTask={addTask}
       onReorder={reorderTasks}
-      onToggleShowDone={toggleShowDone}
+      onFilterChange={setFilter}
       onRefresh={refresh}
     />
   )

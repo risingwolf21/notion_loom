@@ -30,12 +30,13 @@ export function SheetContent({ children, className, title }: SheetContentProps) 
   return (
     <Dialog.Portal>
       <Dialog.Backdrop
-        className="fixed inset-0 bg-black/40 z-40"
+        className="fixed inset-0 bg-black/50 z-40"
         style={{ animation: 'backdrop-in 0.2s ease' }}
       />
       <Dialog.Popup
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-50 bg-[var(--card)] rounded-t-2xl shadow-xl',
+          'fixed bottom-0 left-0 right-0 z-50',
+          'bg-background rounded-t-2xl shadow-xl',
           'max-h-[90dvh] overflow-y-auto',
           'pb-[env(safe-area-inset-bottom)]',
           className,
@@ -49,11 +50,18 @@ export function SheetContent({ children, className, title }: SheetContentProps) 
   )
 }
 
+export function SheetHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn('flex flex-col gap-1.5 bg-card', className)}
+      {...props}
+    />
+  )
+}
+
 export function SheetClose({ children, className }: { children?: ReactNode; className?: string }) {
   return (
-    <Dialog.Close
-      className={cn('inline-flex items-center justify-center', className)}
-    >
+    <Dialog.Close className={cn('inline-flex items-center justify-center', className)}>
       {children}
     </Dialog.Close>
   )
