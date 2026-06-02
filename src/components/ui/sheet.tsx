@@ -35,7 +35,7 @@ export function SheetContent({ children, className, title }: SheetContentProps) 
       />
       <Dialog.Popup
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-50 bg-[var(--card)] rounded-t-2xl shadow-xl',
+          'fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg)] rounded-t-2xl shadow-xl',
           'max-h-[90dvh] overflow-y-auto',
           'pb-[env(safe-area-inset-bottom)]',
           className,

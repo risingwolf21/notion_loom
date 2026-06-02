@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Eye, EyeOff, CheckCircle2, AlertCircle, Copy, Check, ChevronRight, Zap } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, Copy, Check, ChevronRight, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { Alert } from '@/components/ui/alert'
 import { validateConnection } from '@/lib/notion'
 import { FIXED_WORKER_URL } from '@/lib/config'
 import type { Settings } from '@/hooks/useSettings'
@@ -110,12 +111,7 @@ function SimpleOnboarding({ onComplete }: Props) {
               </div>
             </div>
 
-            {error && (
-              <div className="flex items-start gap-2 text-sm text-[var(--destructive)] bg-[rgba(255,59,48,0.08)] rounded-xl px-3 py-2.5">
-                <AlertCircle size={15} className="mt-0.5 shrink-0" />
-                <span className="leading-snug">{error}</span>
-              </div>
-            )}
+            {error && <Alert variant="error">{error}</Alert>}
 
             <Button
               className="w-full"
@@ -291,12 +287,7 @@ function FullOnboarding({ onComplete }: Props) {
                     {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
-                {error && (
-                  <div className="flex items-start gap-2 text-sm text-[var(--destructive)] bg-[rgba(255,59,48,0.08)] rounded-xl px-3 py-2.5">
-                    <AlertCircle size={15} className="mt-0.5 shrink-0" />
-                    <span className="leading-snug">{error}</span>
-                  </div>
-                )}
+                {error && <Alert variant="error">{error}</Alert>}
                 <div className="flex gap-2 pt-1">
                   <Button variant="ghost" onClick={() => setStep(2)} className="flex-1">Back</Button>
                   <Button
