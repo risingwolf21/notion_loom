@@ -28,6 +28,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_ACTIONS: 'true'
+          VITE_WORKER_URL: ${{ secrets.VITE_WORKER_URL }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
