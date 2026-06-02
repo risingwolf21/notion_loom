@@ -26,3 +26,5 @@ public/icons/icon-512.png
 *.njsproj
 *.sln
 *.sw?
+
+.env
