@@ -1,20 +1,18 @@
-import { Separator as BaseSep } from '@base-ui/react/separator'
+import { Separator as BaseSeparator } from '@base-ui/react/separator'
 import { cn } from '@/lib/utils'
 
 interface SeparatorProps {
   className?: string
   orientation?: 'horizontal' | 'vertical'
-  inset?: boolean
 }
 
-export function Separator({ className, orientation = 'horizontal', inset }: SeparatorProps) {
+export function Separator({ className, orientation = 'horizontal' }: SeparatorProps) {
   return (
-    <BaseSep
+    <BaseSeparator
       orientation={orientation}
       className={cn(
-        'bg-[var(--separator)]',
+        'bg-border shrink-0',
         orientation === 'horizontal' ? 'h-px w-full' : 'w-px h-full',
-        inset && 'ml-11',
         className,
       )}
     />

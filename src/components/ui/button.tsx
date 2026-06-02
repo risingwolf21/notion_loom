@@ -1,23 +1,24 @@
-import { type ButtonHTMLAttributes, forwardRef } from 'react'
+import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-150 disabled:pointer-events-none disabled:opacity-40 active:scale-95 select-none',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*="size-"])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.97] select-none',
   {
     variants: {
       variant: {
-        default:     'bg-[var(--primary)] text-white shadow-sm hover:opacity-90',
-        destructive: 'bg-[var(--destructive)] text-white hover:opacity-90',
-        outline:     'border border-[var(--separator)] bg-[var(--card)] hover:bg-[var(--surface2)]',
-        ghost:       'hover:bg-[var(--surface2)] text-[var(--fg)]',
-        link:        'text-[var(--primary)] p-0 h-auto hover:underline',
+        default:     'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
+        destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
+        outline:     'border border-border bg-card shadow-sm hover:bg-accent hover:text-accent-foreground',
+        secondary:   'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
+        ghost:       'hover:bg-accent hover:text-accent-foreground',
+        link:        'text-primary underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm:      'h-8 px-3 text-xs',
-        lg:      'h-12 px-6 text-base',
-        icon:    'h-9 w-9 rounded-full p-0',
+        default: 'h-9 px-4 py-2',
+        sm:      'h-8 rounded-md px-3 text-xs gap-1.5',
+        lg:      'h-10 rounded-md px-6',
+        icon:    'size-9 rounded-full',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },
@@ -29,7 +30,13 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => (
-    <button ref={ref} className={cn(buttonVariants({ variant, size, className }))} {...props} />
+    <button
+      ref={ref}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
   ),
 )
 Button.displayName = 'Button'
+
+export { buttonVariants }

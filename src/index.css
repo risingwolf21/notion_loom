@@ -1,39 +1,94 @@
 @import "tailwindcss";
 
-:root {
-  --bg: #F2F2F7;
-  --card: #FFFFFF;
-  --fg: #1C1C1E;
-  --fg2: rgba(60, 60, 67, 0.8);
-  --fg3: rgba(60, 60, 67, 0.6);
-  --border: rgba(60, 60, 67, 0.12);
-  --separator: rgba(60, 60, 67, 0.36);
-  --primary: #007AFF;
-  --primary-light: rgba(0, 122, 255, 0.1);
-  --destructive: #FF3B30;
-  --success: #34C759;
-  --warning: #FF9500;
-  --surface2: rgba(118, 118, 128, 0.12);
-  --radius: 12px;
+/* ── Tailwind v4: map CSS vars → color utilities ───────────────────────────── */
+@theme inline {
+  --color-background:             var(--background);
+  --color-foreground:             var(--foreground);
+  --color-card:                   var(--card);
+  --color-card-foreground:        var(--card-foreground);
+  --color-popover:                var(--popover);
+  --color-popover-foreground:     var(--popover-foreground);
+  --color-primary:                var(--primary);
+  --color-primary-foreground:     var(--primary-foreground);
+  --color-secondary:              var(--secondary);
+  --color-secondary-foreground:   var(--secondary-foreground);
+  --color-muted:                  var(--muted);
+  --color-muted-foreground:       var(--muted-foreground);
+  --color-accent:                 var(--accent);
+  --color-accent-foreground:      var(--accent-foreground);
+  --color-destructive:            var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border:                 var(--border);
+  --color-input:                  var(--input);
+  --color-ring:                   var(--ring);
+  --color-success:                var(--success);
+  --color-success-foreground:     var(--success-foreground);
+  --color-warning:                var(--warning);
+  --color-warning-foreground:     var(--warning-foreground);
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 4px);
 }
 
+/* ── Light tokens ──────────────────────────────────────────────────────────── */
+:root {
+  --background:             oklch(0.963 0.004 252.4);
+  --foreground:             oklch(0.133 0 0);
+  --card:                   oklch(1 0 0);
+  --card-foreground:        oklch(0.133 0 0);
+  --popover:                oklch(1 0 0);
+  --popover-foreground:     oklch(0.133 0 0);
+  --primary:                oklch(0.588 0.241 259.8);
+  --primary-foreground:     oklch(1 0 0);
+  --secondary:              oklch(0.94 0.004 252.4);
+  --secondary-foreground:   oklch(0.133 0 0);
+  --muted:                  oklch(0.93 0.004 252.4);
+  --muted-foreground:       oklch(0.52 0.008 252.4);
+  --accent:                 oklch(0.93 0.004 252.4);
+  --accent-foreground:      oklch(0.133 0 0);
+  --destructive:            oklch(0.577 0.245 27.3);
+  --destructive-foreground: oklch(1 0 0);
+  --border:                 oklch(0.905 0.004 252.4);
+  --input:                  oklch(0.905 0.004 252.4);
+  --ring:                   oklch(0.588 0.241 259.8);
+  --radius:                 0.75rem;
+  --success:                oklch(0.723 0.19 152.6);
+  --success-foreground:     oklch(1 0 0);
+  --warning:                oklch(0.755 0.189 55.7);
+  --warning-foreground:     oklch(1 0 0);
+}
+
+/* ── Dark tokens ───────────────────────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;
-    --card: #1C1C1E;
-    --fg: #FFFFFF;
-    --fg2: rgba(235, 235, 245, 0.6);
-    --fg3: rgba(235, 235, 245, 0.3);
-    --border: rgba(84, 84, 88, 0.36);
-    --separator: rgba(84, 84, 88, 0.65);
-    --primary: #0A84FF;
-    --primary-light: rgba(10, 132, 255, 0.12);
-    --destructive: #FF453A;
-    --success: #32D74B;
-    --surface2: rgba(118, 118, 128, 0.24);
+    --background:             oklch(0.077 0 0);
+    --foreground:             oklch(0.985 0 0);
+    --card:                   oklch(0.133 0 0);
+    --card-foreground:        oklch(0.985 0 0);
+    --popover:                oklch(0.133 0 0);
+    --popover-foreground:     oklch(0.985 0 0);
+    --primary:                oklch(0.615 0.241 259.8);
+    --primary-foreground:     oklch(1 0 0);
+    --secondary:              oklch(0.205 0 0);
+    --secondary-foreground:   oklch(0.985 0 0);
+    --muted:                  oklch(0.205 0 0);
+    --muted-foreground:       oklch(0.708 0 0);
+    --accent:                 oklch(0.205 0 0);
+    --accent-foreground:      oklch(0.985 0 0);
+    --destructive:            oklch(0.617 0.262 29.2);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border:                 oklch(0.269 0 0);
+    --input:                  oklch(0.269 0 0);
+    --ring:                   oklch(0.615 0.241 259.8);
+    --success:                oklch(0.723 0.19 152.6);
+    --success-foreground:     oklch(1 0 0);
+    --warning:                oklch(0.755 0.189 55.7);
+    --warning-foreground:     oklch(1 0 0);
   }
 }
 
+/* ── Base resets ───────────────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -43,11 +98,11 @@
 
 html, body {
   height: 100%;
-  background: var(--bg);
+  background: var(--background);
 }
 
 body {
-  color: var(--fg);
+  color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
@@ -59,37 +114,20 @@ body {
   flex-direction: column;
 }
 
-/* scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--separator); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* Animations */
-@keyframes slide-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes check-pop {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.25); }
-  100% { transform: scale(1); }
-}
+/* ── Keyframes ─────────────────────────────────────────────────────────────── */
 @keyframes sheet-up {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
-}
-@keyframes sheet-down {
-  from { transform: translateY(0); }
-  to   { transform: translateY(100%); }
 }
 @keyframes backdrop-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-
-.task-enter { animation: slide-in 0.18s ease forwards; }
-.fade-in    { animation: fade-in  0.15s ease forwards; }
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
