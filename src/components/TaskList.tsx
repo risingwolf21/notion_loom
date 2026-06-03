@@ -38,7 +38,7 @@ interface Props {
   onSettings: () => void
   onToggleTask: (id: string, done: boolean) => void
   onDeleteTask: (id: string) => void
-  onAddTask: (title: string, dueDate?: string) => void
+  onAddTask: (fields: import('@/lib/notion').TaskFields) => void
   onReorder: (tasks: Task[]) => void
   onFilterChange: (f: TaskFilter) => void
   onRefresh: () => void
@@ -200,7 +200,7 @@ export function TaskList({
             {!loading && (
               <>
                 <Separator />
-                <AddTaskRow onAdd={onAddTask} hasDateProp={Boolean(meta?.dateProp)} />
+                <AddTaskRow onAdd={onAddTask} meta={meta} />
               </>
             )}
           </Card>

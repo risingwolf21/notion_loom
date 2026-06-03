@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
-import { GripVertical, Trash2 } from 'lucide-react'
+import { GripVertical, Trash2, MapPin, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
@@ -14,25 +14,32 @@ interface Props {
   hasCheckbox: boolean
   onToggle: (id: string, done: boolean) => void
   onDelete: (id: string) => void
+  /** When set, show the database name as a sub-label (for smart list view) */
+  databaseName?: string
 }
 
-export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
-  const {
-    attributes, listeners,
-    setNodeRef
-  } = useSortable({ id: task.id })
+export function TaskItem({ task, hasCheckbox, onToggle, onDelete, databaseName }: Props) {
+  const { attributes, listeners, setNodeRef } = useSortable({ id: task.id })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleToggle = useCallback((_: boolean) => {
     onToggle(task.id, task.done)
   }, [task.id, task.done, onToggle])
 
-  const dueDateBadge = () => {
+  const dueDateLabel = () => {
     if (!task.dueDate) return null
     const date = parseISO(task.dueDate)
-    const label = isToday(date) ? 'Today' : format(date, 'MMM d')
-    const variant = !task.done && isPast(date) && !isToday(date) ? 'destructive' : 'secondary'
-    return <Badge variant={variant} className="text-[11px] px-1.5 py-0">{label}</Badge>
+    const dateStr = isToday(date) ? 'Today' : format(date, 'MMM d')
+    const timeStr = task.dueTime ? ` · ${task.dueTime}` : ''
+    const isOverdue = !task.done && isPast(date) && !isToday(date)
+    return (
+      <Badge
+        variant={isOverdue ? 'destructive' : 'secondary'}
+        className="text-[11px] px-1.5 py-0 gap-0.5"
+      >
+        <Clock size={9} />
+        {dateStr}{timeStr}
+      </Badge>
+    )
   }
 
   return (
@@ -42,7 +49,6 @@ export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
       className="hover:bg-accent/50 transition-colors"
     >
       <ItemMedia>
-        {/* Drag handle */}
         <button
           {...attributes}
           {...listeners}
@@ -53,7 +59,6 @@ export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
           <GripVertical size={14} />
         </button>
 
-        {/* Checkbox */}
         {hasCheckbox && (
           <Checkbox
             checked={task.done}
@@ -63,6 +68,7 @@ export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
           />
         )}
       </ItemMedia>
+
       <ItemContent>
         <ItemTitle className={cn(
           'leading-snug break-words',
@@ -70,15 +76,40 @@ export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
         )}>
           {task.title || <span className="text-muted-foreground italic">Untitled</span>}
         </ItemTitle>
-        {task.dueDate && !task.done && (
+
+        {/* Description */}
+        {task.description && !task.done && (
+          <ItemDescription className="text-xs line-clamp-2">{task.description}</ItemDescription>
+        )}
+
+        {/* Date, location, tags row */}
+        {!task.done && (task.dueDate || task.location || task.tags.length > 0) && (
           <ItemDescription>
-            {dueDateBadge()}
+            <div className="flex flex-wrap items-center gap-1 mt-0.5">
+              {task.dueDate && dueDateLabel()}
+              {task.location && (
+                <Badge variant="outline" className="text-[11px] px-1.5 py-0 gap-0.5 text-muted-foreground">
+                  <MapPin size={9} />
+                  {task.location}
+                </Badge>
+              )}
+              {task.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-[11px] px-1.5 py-0">{tag}</Badge>
+              ))}
+              {databaseName && (
+                <span className="text-[11px] text-muted-foreground">{databaseName}</span>
+              )}
+            </div>
           </ItemDescription>
+        )}
+
+        {/* Database name for smart list (done tasks) */}
+        {task.done && databaseName && (
+          <ItemDescription className="text-[11px]">{databaseName}</ItemDescription>
         )}
       </ItemContent>
 
       <ItemActions>
-        {/* Delete button — appears on row hover */}
         <Button
           variant="ghost"
           size="icon"
@@ -90,7 +121,6 @@ export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
           <Trash2 size={13} />
         </Button>
       </ItemActions>
-
     </Item>
   )
 }

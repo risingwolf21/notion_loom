@@ -83,23 +83,23 @@ export function useTaskList(database: NotionDatabase, settings: Settings) {
     }
   }, [settings.workerUrl, settings.token])
 
-  const addTask = useCallback(async (title: string, dueDate?: string) => {
+  const addTask = useCallback(async (fields: import('@/lib/notion').TaskFields) => {
     const m = metaRef.current
-    if (!m || !title.trim()) return
+    if (!m || !fields.title.trim()) return
     const tempId = `temp_${Date.now()}`
-    const temp: Task = { id: tempId, title: title.trim(), done: false, dueDate: dueDate ?? null, createdTime: new Date().toISOString() }
+    const temp: Task = {
+      id: tempId, title: fields.title.trim(), done: false,
+      dueDate: fields.dueDate ?? null, dueTime: fields.dueTime ?? null,
+      description: fields.description ?? null, location: fields.location ?? null,
+      tags: fields.tags ?? [], createdTime: new Date().toISOString(),
+    }
     setTasks((prev) => {
       const next = [temp, ...prev]
       saveOrder(database.id, next.map((t) => t.id))
       return next
     })
     try {
-      const page = await createPage(
-        settings.workerUrl, settings.token, database.id,
-        m.titleProp, title.trim(),
-        m.checkboxProp ?? undefined,
-        m.dateProp ?? undefined, dueDate,
-      )
+      const page = await createPage(settings.workerUrl, settings.token, database.id, m, fields)
       const real = pageToTask(page, m)
       setTasks((prev) => {
         const next = prev.map((t) => t.id === tempId ? real : t)

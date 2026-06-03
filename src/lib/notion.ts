@@ -99,25 +99,41 @@ export async function queryDatabase(
   return pages
 }
 
+export interface TaskFields {
+  title: string
+  dueDate?: string    // YYYY-MM-DD
+  dueTime?: string    // HH:mm
+  description?: string
+  location?: string
+  tags?: string[]
+}
+
 export async function createPage(
   workerUrl: string,
   token: string,
   databaseId: string,
-  titlePropName: string,
-  title: string,
-  checkboxPropName?: string,
-  datePropName?: string,
-  dueDate?: string,
+  meta: { titleProp: string; checkboxProp?: string | null; dateProp?: string | null; descriptionProp?: string | null; locationProp?: string | null; tagsProp?: string | null },
+  fields: TaskFields,
 ): Promise<NotionPage> {
   const properties: Record<string, unknown> = {
-    [titlePropName]: { title: [{ text: { content: title } }] },
+    [meta.titleProp]: { title: [{ text: { content: fields.title } }] },
   }
 
-  if (checkboxPropName) {
-    properties[checkboxPropName] = { checkbox: false }
+  if (meta.checkboxProp) {
+    properties[meta.checkboxProp] = { checkbox: false }
   }
-  if (datePropName && dueDate) {
-    properties[datePropName] = { date: { start: dueDate } }
+  if (meta.dateProp && fields.dueDate) {
+    const start = fields.dueTime ? `${fields.dueDate}T${fields.dueTime}:00` : fields.dueDate
+    properties[meta.dateProp] = { date: { start } }
+  }
+  if (meta.descriptionProp && fields.description) {
+    properties[meta.descriptionProp] = { rich_text: [{ text: { content: fields.description } }] }
+  }
+  if (meta.locationProp && fields.location) {
+    properties[meta.locationProp] = { rich_text: [{ text: { content: fields.location } }] }
+  }
+  if (meta.tagsProp && fields.tags?.length) {
+    properties[meta.tagsProp] = { multi_select: fields.tags.map((name) => ({ name })) }
   }
 
   return notionFetch<NotionPage>(workerUrl, token, '/v1/pages', 'POST', {
