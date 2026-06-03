@@ -37,18 +37,16 @@ export function AddTaskRow({ onAdd, hasDateProp }: Props) {
     return (
       <button
         onClick={() => { setOpen(true); setTimeout(() => inputRef.current?.focus(), 50) }}
-        className="flex items-center gap-3 w-full px-4 py-3 text-primary text-sm font-medium hover:bg-accent transition-colors"
+        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
-        <div className="size-6 rounded-full bg-primary flex items-center justify-center shrink-0">
-          <Plus size={14} className="text-primary-foreground" />
-        </div>
+        <Plus size={14} className="shrink-0" />
         New task
       </button>
     )
   }
 
   return (
-    <div className="px-4 py-3 space-y-2 bg-card border-t border-border">
+    <div className="px-4 py-3 space-y-2 bg-background border-t border-border">
       <Input
         ref={inputRef}
         value={title}

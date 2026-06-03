@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useDrag } from '@use-gesture/react'
 import { GripVertical, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@base-ui/react/checkbox'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { format, isPast, isToday, parseISO } from 'date-fns'
 import type { Task } from '@/types/notion'
@@ -17,108 +17,81 @@ interface Props {
 }
 
 export function TaskItem({ task, hasCheckbox, onToggle, onDelete }: Props) {
-  const [swipeX, setSwipeX] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-
   const {
     attributes, listeners,
     setNodeRef, transform, transition,
-    isDragging: isSortDragging,
+    isDragging,
   } = useSortable({ id: task.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isSortDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.5 : 1,
   }
 
-  const bind = useDrag(
-    ({ movement: [mx], down, first, last, cancel }) => {
-      if (isSortDragging) { cancel(); return }
-      if (first) setIsDragging(false)
-      if (mx > 8) { cancel(); return }
-      const clamped = Math.min(0, mx)
-      setSwipeX(down ? clamped : 0)
-      if (last && clamped < -90) onDelete(task.id)
-      if (!down) setSwipeX(0)
-    },
-    { filterTaps: true, axis: 'x' },
-  )
-
-  const handleToggle = useCallback(() => {
-    if (!isDragging) onToggle(task.id, task.done)
-  }, [isDragging, task.id, task.done, onToggle])
+  const handleToggle = useCallback((_checked: boolean) => {
+    onToggle(task.id, task.done)
+  }, [task.id, task.done, onToggle])
 
   const dueDateBadge = () => {
     if (!task.dueDate) return null
     const date = parseISO(task.dueDate)
     const label = isToday(date) ? 'Today' : format(date, 'MMM d')
     const variant = !task.done && isPast(date) && !isToday(date) ? 'destructive' : 'secondary'
-    return <Badge variant={variant}>{label}</Badge>
+    return <Badge variant={variant} className="text-[11px] px-1.5 py-0">{label}</Badge>
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="relative overflow-hidden">
-      {/* Delete background */}
-      <div className="absolute inset-0 bg-destructive flex items-center justify-end pr-5" aria-hidden>
-        <Trash2 size={20} className="text-destructive-foreground" />
-      </div>
-
-      {/* Swipeable row */}
-      <div
-        {...bind()}
-        className="relative flex items-center gap-3 px-4 py-3 bg-card select-none"
-        style={{
-          transform: `translateX(${swipeX}px)`,
-          transition: swipeX === 0 ? 'transform 0.3s cubic-bezier(0.32,0.72,0,1)' : 'none',
-          touchAction: 'pan-y',
-        }}
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2 px-3 py-2.5 group hover:bg-accent/50 transition-colors"
+    >
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="p-1 text-muted-foreground/40 hover:text-muted-foreground cursor-grab active:cursor-grabbing touch-none shrink-0 transition-colors"
+        aria-label="Drag to reorder"
+        tabIndex={-1}
       >
-        {/* Drag handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="p-1 -ml-1 text-muted-foreground cursor-grab active:cursor-grabbing touch-none shrink-0"
-          aria-label="Drag to reorder"
-          tabIndex={-1}
-        >
-          <GripVertical size={16} />
-        </button>
+        <GripVertical size={14} />
+      </button>
 
-        {/* Checkbox (using Base UI directly — shadcn "base" style) */}
-        {hasCheckbox && (
-          <Checkbox.Root
-            checked={task.done}
-            onCheckedChange={handleToggle}
-            className={cn(
-              'size-[22px] rounded-full border-2 shrink-0 flex items-center justify-center transition-all duration-200 cursor-pointer outline-none',
-              task.done ? 'bg-success border-success' : 'border-border',
-            )}
-            aria-label={`Mark "${task.title}" as ${task.done ? 'incomplete' : 'complete'}`}
-          >
-            <Checkbox.Indicator
-              className={cn('transition-all duration-150', task.done ? 'opacity-100 scale-100' : 'opacity-0 scale-50')}
-            >
-              <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
-                <path d="M1 4l3.5 4L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Checkbox.Indicator>
-          </Checkbox.Root>
+      {/* Checkbox */}
+      {hasCheckbox && (
+        <Checkbox
+          checked={task.done}
+          onCheckedChange={handleToggle}
+          aria-label={`Mark "${task.title}" as ${task.done ? 'incomplete' : 'complete'}`}
+          className="shrink-0"
+        />
+      )}
+
+      {/* Title + date */}
+      <div className="flex-1 min-w-0">
+        <p className={cn(
+          'text-sm leading-snug break-words',
+          task.done ? 'line-through text-muted-foreground' : 'text-foreground',
+        )}>
+          {task.title || <span className="text-muted-foreground italic">Untitled</span>}
+        </p>
+        {task.dueDate && !task.done && (
+          <div className="mt-0.5">{dueDateBadge()}</div>
         )}
-
-        {/* Title + date */}
-        <div className="flex-1 min-w-0">
-          <p className={cn(
-            'text-sm leading-snug break-words',
-            task.done ? 'line-through text-muted-foreground' : 'text-foreground',
-          )}>
-            {task.title || <span className="text-muted-foreground">Untitled</span>}
-          </p>
-          {task.dueDate && !task.done && (
-            <div className="mt-1">{dueDateBadge()}</div>
-          )}
-        </div>
       </div>
+
+      {/* Delete button — appears on row hover */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-7 shrink-0 text-transparent group-hover:text-muted-foreground hover:!text-destructive hover:bg-destructive/10 transition-all"
+        onClick={() => onDelete(task.id)}
+        aria-label={`Delete "${task.title}"`}
+        tabIndex={-1}
+      >
+        <Trash2 size={13} />
+      </Button>
     </div>
   )
 }

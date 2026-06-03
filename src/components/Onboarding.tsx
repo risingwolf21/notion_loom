@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Eye, EyeOff, CheckCircle2, Copy, Check, ChevronRight, Zap, Shield } from 'lucide-react'
+import { Eye, EyeOff, Copy, Check, ChevronRight, Shield, Link2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Alert } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { validateConnection } from '@/lib/notion'
 import { FIXED_WORKER_URL } from '@/lib/config'
 import type { Settings } from '@/hooks/useSettings'
@@ -61,39 +61,30 @@ function SimpleOnboarding({ onComplete }: Props) {
   }
 
   return (
-    <div className="flex-1 flex flex-col justify-center overflow-y-auto bg-background px-5 py-10">
-      <div className="max-w-sm mx-auto w-full space-y-6">
-        <div className="flex flex-col items-center gap-3 pb-2">
-          <div className="size-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-            <CheckCircle2 size={30} className="text-primary-foreground" />
-          </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground">Notion Loom</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">iOS Reminders, powered by Notion</p>
-          </div>
+    <div className="flex-1 flex flex-col items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm space-y-6">
+        <div className="space-y-1 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">Notion Loom</h1>
+          <p className="text-sm text-muted-foreground">Your Notion databases as task lists</p>
         </div>
 
         <Card>
-          <CardContent className="pt-6 space-y-5">
-            <div className="flex items-center gap-2">
-              <Badge variant="success" className="gap-1.5 py-1 px-2.5">
-                <Zap size={11} />
-                Proxy pre-configured
-              </Badge>
-            </div>
+          <CardContent className="pt-6 space-y-4">
+            <Alert variant="info" className="py-2">
+              Proxy is pre-configured — just add your token.
+            </Alert>
 
             <div className="space-y-1.5">
-              <Label className="flex items-center gap-1.5">
-                <Shield size={13} className="text-muted-foreground" />
-                Notion Integration Token
+              <Label htmlFor="token" className="flex items-center gap-1.5">
+                <Shield size={12} className="text-muted-foreground" />
+                Integration Token
               </Label>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Go to <strong className="text-foreground">notion.so/my-integrations</strong>, create
-                an integration, give it access to your databases, and paste the token here.
-                It's stored only on this device.
+              <p className="text-xs text-muted-foreground">
+                Create an integration at <strong className="text-foreground font-medium">notion.so/my-integrations</strong> and paste the token here. Stored only on this device.
               </p>
-              <div className="relative mt-2">
+              <div className="relative">
                 <Input
+                  id="token"
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && void connect()}
@@ -102,7 +93,7 @@ function SimpleOnboarding({ onComplete }: Props) {
                   autoFocus
                   autoCapitalize="none"
                   autoComplete="off"
-                  className="pr-10"
+                  className="pr-9"
                 />
                 <button
                   type="button"
@@ -110,18 +101,14 @@ function SimpleOnboarding({ onComplete }: Props) {
                   onClick={() => setShowToken(v => !v)}
                   aria-label={showToken ? 'Hide token' : 'Show token'}
                 >
-                  {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
+                  {showToken ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
 
             {error && <Alert variant="destructive">{error}</Alert>}
 
-            <Button
-              className="w-full"
-              onClick={() => void connect()}
-              disabled={!token.trim() || testing}
-            >
+            <Button className="w-full" onClick={() => void connect()} disabled={!token.trim() || testing}>
               {testing ? 'Connecting…' : 'Connect to Notion'}
             </Button>
           </CardContent>
@@ -161,154 +148,164 @@ function FullOnboarding({ onComplete }: Props) {
     }
   }
 
-  const stepTitles = ['Deploy proxy', 'Worker URL', 'Notion token']
-
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto bg-background">
-      <div className="max-w-lg mx-auto w-full px-5 py-8 space-y-6">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-            <CheckCircle2 size={30} className="text-primary-foreground" />
-          </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground">Notion Loom</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">iOS Reminders, powered by Notion</p>
-          </div>
+    <div className="flex-1 flex flex-col items-center justify-center bg-background px-4 py-8 overflow-y-auto">
+      <div className="w-full max-w-sm space-y-6">
+        {/* Title */}
+        <div className="space-y-1 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">Notion Loom</h1>
+          <p className="text-sm text-muted-foreground">Your Notion databases as task lists</p>
         </div>
 
         {/* Step indicator */}
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1.5">
           {([1, 2, 3] as const).map((s) => (
             <div
               key={s}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                s === step
-                  ? 'w-8 bg-primary'
-                  : s < step
-                    ? 'w-4 bg-primary opacity-40'
-                    : 'w-4 bg-border'
+              className={`h-1 rounded-full transition-all duration-300 ${
+                s === step ? 'w-6 bg-foreground' : s < step ? 'w-3 bg-foreground/30' : 'w-3 bg-border'
               }`}
             />
           ))}
         </div>
 
         <Card>
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <span className="size-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0">
-                {step}
-              </span>
-              <h2 className="text-base font-semibold text-foreground">{stepTitles[step - 1]}</h2>
-            </div>
+          <CardHeader className="pb-0">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Step {step} of 3
+            </p>
+          </CardHeader>
 
+          <CardContent className="pt-3 space-y-4">
             {step === 1 && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Notion's API blocks browser requests. Deploy a free Cloudflare Worker as a proxy — it takes about 3 minutes.
-                </p>
-                <ol className="space-y-2.5 text-sm text-muted-foreground">
+              <>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Deploy a Cloudflare Worker</p>
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                    Notion's API blocks browsers. A free Cloudflare Worker acts as a proxy — takes about 3 minutes.
+                  </p>
+                </div>
+
+                <ol className="space-y-2 text-sm text-muted-foreground">
                   {[
-                    <>Go to <strong className="text-foreground">workers.cloudflare.com</strong> and sign in (free account).</>,
-                    <>Click <strong className="text-foreground">Create Worker</strong> → <strong className="text-foreground">Deploy</strong>.</>,
-                    <>Click <strong className="text-foreground">Edit code</strong>, replace everything with the code below, then <strong className="text-foreground">Save &amp; Deploy</strong>.</>,
-                    <>Copy the Worker URL shown on the dashboard.</>,
+                    <>Sign in at <strong className="text-foreground font-medium">workers.cloudflare.com</strong> (free account).</>,
+                    <>Click <strong className="text-foreground font-medium">Create Worker</strong> → Deploy.</>,
+                    <>Click <strong className="text-foreground font-medium">Edit code</strong>, replace everything with the code below, then Save &amp; Deploy.</>,
+                    <>Copy the Worker URL from the dashboard.</>,
                   ].map((item, i) => (
                     <li key={i} className="flex gap-2.5 items-start">
-                      <span className="size-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="size-4 rounded-full bg-secondary text-foreground text-[10px] font-semibold flex items-center justify-center shrink-0 mt-0.5">
                         {i + 1}
                       </span>
                       <span className="flex-1 leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ol>
-                <div className="relative rounded-xl overflow-hidden border border-border">
-                  <pre className="text-[11px] bg-muted p-4 overflow-x-auto text-muted-foreground leading-relaxed whitespace-pre font-mono">
+
+                <div className="relative rounded-md overflow-hidden border border-border">
+                  <pre className="text-[11px] bg-muted/60 p-3 overflow-x-auto text-muted-foreground leading-relaxed whitespace-pre font-mono">
                     {WORKER_CODE}
                   </pre>
                   <button
                     onClick={copyCode}
-                    className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-card shadow-sm text-muted-foreground hover:text-foreground transition-colors border border-border"
+                    className="absolute top-2 right-2 p-1.5 rounded bg-background border border-border text-muted-foreground hover:text-foreground transition-colors shadow-sm"
                     aria-label="Copy code"
                   >
-                    {copied ? <Check size={13} className="text-success" /> : <Copy size={13} />}
+                    {copied ? <Check size={12} className="text-success" /> : <Copy size={12} />}
                   </button>
                 </div>
+
                 <Button className="w-full" onClick={() => setStep(2)}>
-                  Worker deployed <ChevronRight size={15} />
+                  Done — Worker is deployed <ChevronRight size={14} />
                 </Button>
-              </div>
+              </>
             )}
 
             {step === 2 && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Paste the URL Cloudflare gave your Worker (e.g.{' '}
-                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-foreground">my-worker.workers.dev</code>).
-                </p>
-                <Input
-                  value={workerUrl}
-                  onChange={(e) => setWorkerUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && workerUrl.trim() && setStep(3)}
-                  placeholder="https://my-worker.workers.dev"
-                  type="url"
-                  autoFocus
-                  autoCapitalize="none"
-                  autoComplete="off"
-                />
-                <div className="flex gap-2 pt-1">
-                  <Button variant="ghost" onClick={() => setStep(1)} className="flex-1">Back</Button>
-                  <Button onClick={() => setStep(3)} disabled={!workerUrl.trim()} className="flex-1">
-                    Continue <ChevronRight size={15} />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Go to <strong className="text-foreground">notion.so/my-integrations</strong>, create
-                  an integration, give it access to your databases, and paste the token below.
-                  It's stored only on this device.
-                </p>
-                <div className="relative">
+              <>
+                <div>
+                  <Label htmlFor="worker-url" className="flex items-center gap-1.5 mb-1.5">
+                    <Link2 size={12} className="text-muted-foreground" />
+                    Worker URL
+                  </Label>
+                  <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                    Paste the URL Cloudflare assigned your Worker (e.g.{' '}
+                    <code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">my-worker.workers.dev</code>).
+                  </p>
                   <Input
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && void handleConnect()}
-                    type={showToken ? 'text' : 'password'}
-                    placeholder="secret_…"
+                    id="worker-url"
+                    value={workerUrl}
+                    onChange={(e) => setWorkerUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && workerUrl.trim() && setStep(3)}
+                    placeholder="https://my-worker.workers.dev"
+                    type="url"
                     autoFocus
                     autoCapitalize="none"
                     autoComplete="off"
-                    className="pr-10"
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => setShowToken(v => !v)}
-                    aria-label={showToken ? 'Hide token' : 'Show token'}
-                  >
-                    {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
                 </div>
+
+                <Separator />
+
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setStep(1)} className="flex-1">Back</Button>
+                  <Button onClick={() => setStep(3)} disabled={!workerUrl.trim()} className="flex-1">
+                    Continue <ChevronRight size={14} />
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <div>
+                  <Label htmlFor="token" className="flex items-center gap-1.5 mb-1.5">
+                    <Shield size={12} className="text-muted-foreground" />
+                    Integration Token
+                  </Label>
+                  <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                    Create an integration at <strong className="text-foreground font-medium">notion.so/my-integrations</strong>, give it access to your databases, and paste the token below. Stored only on this device.
+                  </p>
+                  <div className="relative">
+                    <Input
+                      id="token"
+                      value={token}
+                      onChange={(e) => setToken(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && void handleConnect()}
+                      type={showToken ? 'text' : 'password'}
+                      placeholder="secret_…"
+                      autoFocus
+                      autoCapitalize="none"
+                      autoComplete="off"
+                      className="pr-9"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => setShowToken(v => !v)}
+                      aria-label={showToken ? 'Hide token' : 'Show token'}
+                    >
+                      {showToken ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
+                </div>
+
                 {error && <Alert variant="destructive">{error}</Alert>}
-                <div className="flex gap-2 pt-1">
-                  <Button variant="ghost" onClick={() => setStep(2)} className="flex-1">Back</Button>
-                  <Button
-                    onClick={() => void handleConnect()}
-                    disabled={!token.trim() || testing}
-                    className="flex-1"
-                  >
+
+                <Separator />
+
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setStep(2)} className="flex-1">Back</Button>
+                  <Button onClick={() => void handleConnect()} disabled={!token.trim() || testing} className="flex-1">
                     {testing ? 'Connecting…' : 'Connect'}
                   </Button>
                 </div>
-              </div>
+              </>
             )}
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground px-4 pb-4">
+        <p className="text-center text-xs text-muted-foreground">
           Your token is stored only on this device and sent exclusively to your own Worker.
         </p>
       </div>
