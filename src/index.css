@@ -1,7 +1,11 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
 
 /* ── Tailwind v4: map CSS vars → color utilities ───────────────────────────── */
 @theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
   --color-background:             var(--background);
   --color-foreground:             var(--foreground);
   --color-card:                   var(--card);
@@ -21,17 +25,59 @@
   --color-border:                 var(--border);
   --color-input:                  var(--input);
   --color-ring:                   var(--ring);
-  --color-success:                var(--success);
-  --color-success-foreground:     var(--success-foreground);
-  --color-warning:                var(--warning);
-  --color-warning-foreground:     var(--warning-foreground);
-  --radius-sm:  calc(var(--radius) - 2px);
-  --radius-md:  var(--radius);
-  --radius-lg:  calc(var(--radius) + 2px);
-  --radius-xl:  calc(var(--radius) + 4px);
+  --color-sidebar:                var(--sidebar);
+  --color-sidebar-foreground:     var(--sidebar-foreground);
+  --color-sidebar-primary:        var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:         var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border:         var(--sidebar-border);
+  --color-sidebar-ring:           var(--sidebar-ring);
+
+  --spacing-safe-top:    env(safe-area-inset-top);
+  --spacing-safe-bottom: env(safe-area-inset-bottom);
+  --spacing-safe-left:   env(safe-area-inset-left);
+  --spacing-safe-right:  env(safe-area-inset-right);
+
+  /* radius scale — percentage-based like roundnet */
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* INFO */
+  --color-info-50:       var(--info-50);
+  --color-info-500:      var(--info-500);
+  --color-info-900:      var(--info-900);
+  --color-info:          var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* SUCCESS */
+  --color-success-50:       var(--success-50);
+  --color-success-500:      var(--success-500);
+  --color-success-900:      var(--success-900);
+  --color-success:          var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  /* ERROR */
+  --color-error-50:       var(--error-50);
+  --color-error-500:      var(--error-500);
+  --color-error-900:      var(--error-900);
+  --color-error:          var(--error);
+  --color-error-foreground: var(--error-foreground);
+
+  /* WARNING */
+  --color-warning-50:       var(--warning-50);
+  --color-warning-500:      var(--warning-500);
+  --color-warning-900:      var(--warning-900);
+  --color-warning:          var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
 }
 
-/* ── Light tokens (shadcn zinc) ────────────────────────────────────────────── */
+/* ── Light tokens ────────────────────────────────────────────────────────────── */
 :root {
   --background:             oklch(1 0 0);
   --foreground:             oklch(0.141 0.004 285.75);
@@ -52,11 +98,44 @@
   --border:                 oklch(0.92 0.004 286.32);
   --input:                  oklch(0.92 0.004 286.32);
   --ring:                   oklch(0.21 0.006 285.885);
-  --radius:                 0.5rem;
-  --success:                oklch(0.527 0.154 150.069);
-  --success-foreground:     oklch(0.985 0 0);
-  --warning:                oklch(0.646 0.183 68.717);
-  --warning-foreground:     oklch(0.985 0 0);
+  --radius:                 0.625rem;
+
+  --sidebar:                oklch(0.985 0 0);
+  --sidebar-foreground:     oklch(0.141 0.004 285.75);
+  --sidebar-primary:        oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent:         oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border:         oklch(0.92 0.004 286.32);
+  --sidebar-ring:           oklch(0.21 0.006 285.885);
+
+  /* INFO */
+  --info-50:          #e5f6fd;
+  --info-500:         #03a9f4;
+  --info-900:         #01579b;
+  --info:             #0288d1;
+  --info-foreground:  #ffffff;
+
+  /* SUCCESS */
+  --success-50:          #edf7ed;
+  --success-500:         #4caf50;
+  --success-900:         #1b5e20;
+  --success:             #2e7d32;
+  --success-foreground:  #ffffff;
+
+  /* ERROR */
+  --error-50:          #fdeded;
+  --error-500:         #ef5350;
+  --error-900:         #c62828;
+  --error:             #d32f2f;
+  --error-foreground:  #ffffff;
+
+  /* WARNING */
+  --warning-50:          #fff4e5;
+  --warning-500:         #ff9800;
+  --warning-900:         #e65100;
+  --warning:             #ed6c02;
+  --warning-foreground:  #ffffff;
 }
 
 /* ── Dark tokens ───────────────────────────────────────────────────────────── */
@@ -81,10 +160,15 @@
     --border:                 oklch(0.274 0.006 286.618);
     --input:                  oklch(0.274 0.006 286.618);
     --ring:                   oklch(0.871 0.006 286.286);
-    --success:                oklch(0.696 0.17 162.48);
-    --success-foreground:     oklch(0.985 0 0);
-    --warning:                oklch(0.769 0.188 70.08);
-    --warning-foreground:     oklch(0.21 0.006 285.885);
+
+    --sidebar:                oklch(0.179 0.005 285.823);
+    --sidebar-foreground:     oklch(0.985 0 0);
+    --sidebar-primary:        oklch(0.985 0 0);
+    --sidebar-primary-foreground: oklch(0.21 0.006 285.885);
+    --sidebar-accent:         oklch(0.274 0.006 286.618);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border:         oklch(0.274 0.006 286.618);
+    --sidebar-ring:           oklch(0.871 0.006 286.286);
   }
 }
 
@@ -99,13 +183,15 @@
 html, body {
   height: 100%;
   background: var(--background);
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
 }
 
 #root {
@@ -118,20 +204,14 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* ── Keyframes ─────────────────────────────────────────────────────────────── */
-@keyframes sheet-right-in {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
 }
-@keyframes sheet-right-out {
-  from { transform: translateX(0); }
-  to   { transform: translateX(100%); }
-}
-@keyframes backdrop-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes slide-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
+
+@layer utilities {
+  .cn-font-heading {
+    font-family: var(--font-heading, var(--font-sans));
+  }
 }
