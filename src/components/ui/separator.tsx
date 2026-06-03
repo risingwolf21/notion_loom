@@ -1,12 +1,10 @@
 import { Separator as BaseSeparator } from '@base-ui/react/separator'
+import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-interface SeparatorProps {
-  className?: string
-  orientation?: 'horizontal' | 'vertical'
-}
+type SeparatorProps = React.ComponentProps<typeof BaseSeparator>
 
-export function Separator({ className, orientation = 'horizontal' }: SeparatorProps) {
+export function Separator({ className, orientation = 'horizontal', ...props }: SeparatorProps) {
   return (
     <BaseSeparator
       orientation={orientation}
@@ -15,6 +13,7 @@ export function Separator({ className, orientation = 'horizontal' }: SeparatorPr
         orientation === 'horizontal' ? 'h-px w-full' : 'w-px h-full',
         className,
       )}
+      {...props}
     />
   )
 }
