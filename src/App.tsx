@@ -2,40 +2,21 @@ import { useState } from 'react'
 import { useSettings } from '@/hooks/useSettings'
 import { useNotionDatabases } from '@/hooks/useNotionDatabases'
 import { useTaskList } from '@/hooks/useTaskList'
+import { useAllTasks } from '@/hooks/useAllTasks'
 import { Onboarding } from '@/components/Onboarding'
 import { DatabasePicker } from '@/components/DatabasePicker'
 import { TaskList } from '@/components/TaskList'
+import { SmartListView } from '@/components/SmartListView'
 import { SettingsSheet } from '@/components/SettingsSheet'
 import type { Settings } from '@/hooks/useSettings'
 import type { NotionDatabase } from '@/types/notion'
+import type { SmartFilter } from '@/hooks/useAllTasks'
 
 type View =
   | { name: 'onboarding' }
   | { name: 'databases' }
   | { name: 'tasks'; database: NotionDatabase }
-
-function DatabasesView({
-  settings,
-  onSelect,
-  onSettings,
-}: {
-  settings: Settings
-  onSelect: (db: NotionDatabase) => void
-  onSettings: () => void
-}) {
-  const { databases, loading, error, refresh } = useNotionDatabases(settings)
-
-  return (
-    <DatabasePicker
-      databases={databases}
-      loading={loading}
-      error={error}
-      onSelect={onSelect}
-      onRefresh={refresh}
-      onSettings={onSettings}
-    />
-  )
-}
+  | { name: 'smart'; filter: SmartFilter }
 
 function TasksView({
   settings,
@@ -82,6 +63,17 @@ export default function App() {
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
 
+  const { databases, loading: dbLoading, error: dbError, refresh: refreshDbs } =
+    useNotionDatabases(settings)
+
+  const { counts, filterTasks, toggleTask, deleteTask, loading: allLoading, error: allError, refresh: refreshAll } =
+    useAllTasks(databases, settings)
+
+  function handleRefresh() {
+    refreshDbs()
+    refreshAll()
+  }
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {view.name === 'onboarding' && (
@@ -94,9 +86,15 @@ export default function App() {
       )}
 
       {view.name === 'databases' && (
-        <DatabasesView
-          settings={settings}
+        <DatabasePicker
+          databases={databases}
+          loading={dbLoading}
+          error={dbError}
+          counts={counts}
+          countsLoading={allLoading}
           onSelect={(db) => setView({ name: 'tasks', database: db })}
+          onSmartCard={(filter) => setView({ name: 'smart', filter })}
+          onRefresh={handleRefresh}
           onSettings={() => setSettingsOpen(true)}
         />
       )}
@@ -107,6 +105,19 @@ export default function App() {
           database={view.database}
           onBack={() => setView({ name: 'databases' })}
           onSettings={() => setSettingsOpen(true)}
+        />
+      )}
+
+      {view.name === 'smart' && (
+        <SmartListView
+          filter={view.filter}
+          tasks={filterTasks(view.filter)}
+          loading={allLoading}
+          error={allError}
+          onToggle={toggleTask}
+          onDelete={deleteTask}
+          onBack={() => setView({ name: 'databases' })}
+          onRefresh={refreshAll}
         />
       )}
 

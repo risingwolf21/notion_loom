@@ -29,6 +29,7 @@ export type NotionPropertyValue =
   | { type: 'rich_text'; rich_text: NotionTextContent[] }
   | { type: 'select'; select: { name: string; color: string } | null }
   | { type: 'status'; status: { name: string; color: string } | null }
+  | { type: 'multi_select'; multi_select: Array<{ id: string; name: string; color: string }> }
 
 export interface NotionPage {
   id: string
@@ -42,7 +43,11 @@ export interface Task {
   id: string
   title: string
   done: boolean
-  dueDate: string | null
+  dueDate: string | null    // YYYY-MM-DD
+  dueTime: string | null    // HH:mm
+  description: string | null
+  location: string | null
+  tags: string[]
   createdTime: string
 }
 
@@ -50,4 +55,7 @@ export interface DatabaseMeta {
   titleProp: string
   checkboxProp: string | null
   dateProp: string | null
+  descriptionProp: string | null
+  locationProp: string | null
+  tagsProp: string | null
 }
